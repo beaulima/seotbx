@@ -1,0 +1,14 @@
+name: seotbx
+channels:
+  - pytorch
+  - conda-forge
+dependencies:
+  - cython
+  - pip
+  - numpy
+  - scipy
+  - gdal
+  - seaborn
+  - matplotlib
+  - pip:
+    - -r requirements.txt
