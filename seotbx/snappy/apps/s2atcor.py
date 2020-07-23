@@ -2,9 +2,9 @@ import logging
 import os
 import seotbx
 import zipfile
+logger = logging.getLogger("seotbx.snappy.apps.s2atcor")
 
-
-def s2atcor(args, b_saved_only_10m=True):
+def s2atcor(args, b_saved_only_10m=True, b_delete_srtm=False):
 
     seotbx.logger.info("Atmospheric correction on Sentinel2 with bands extraction in tif")
     if len(args.args) is 0:
@@ -18,8 +18,10 @@ def s2atcor(args, b_saved_only_10m=True):
     except:
         workspace = os.path.dirname(file_path)
 
-    os.chdir(workspace)
+    if workspace == "":
+        workspace = "./"
 
+    os.chdir(workspace)
     output_directory = workspace
     try:
         # the file must be unzip first
@@ -35,8 +37,9 @@ def s2atcor(args, b_saved_only_10m=True):
         logging.info("Processing")
 
     key_name = os.path.basename(file_path)
-    basedir = os.path.dirname(file_path)
     key_name = key_name[0:26]
+    basedir = os.path.dirname(file_path)
+
     key_name = key_name.replace("MSIL1C", "MSIL2A")
 
     import glob
@@ -52,17 +55,19 @@ def s2atcor(args, b_saved_only_10m=True):
         seotbx.logger.info(f"Deleting: {file}")
 
     command_args = []
+    targetProductFile = f"tmp_{key_name}"
     command_args.append("Sen2Cor280")
-    command_args.append("-SsourceProduct=%s" % file_path)
+    command_args.append(f"-SsourceProduct={file_path}")
     command_args.append("-Presolution=ALL")
-    command_args.append("-PdemDirectory=%s" % output_directory)
+    command_args.append(f"-PdemDirectory={output_directory}")
     command_args.append("-PgenerateDEMoutput=TRUE")
     command_args.append("-PgenerateTCIoutput=TRUE")
     command_args.append("-PgenerateDDVoutput=TRUE")
     command_args.append("-PnbThreads=8")
     command_args.append("-PDEMTerrainCorrection=TRUE")
     command_args.append("-PcirrusCorrection=TRUE")
-
+    command_args.append("-PcirrusCorrection=TRUE")
+    #command_args.append(f"-PtargetProductFile={targetProductFile}")
     seotbx.snappy.core.run_gpt_base(command_args)
 
     files = glob.glob(f'{os.path.join(basedir, key_name)}*')
@@ -78,6 +83,7 @@ def s2atcor(args, b_saved_only_10m=True):
          command_args.append(filepath_output)
          command_args.append("-f")
          command_args.append("GeoTIFF-BigTIFF")
+
          seotbx.snappy.core.run_gpt_base(command_args)
          logging.debug("Saved: %s" % (filepath_output))
 
@@ -93,22 +99,25 @@ def s2atcor(args, b_saved_only_10m=True):
             os.remove(file)
         seotbx.logger.info(f"Deleting: {file}")
 
-    files = glob.glob(f'{os.path.join(basedir, "srtm")}*')
-    # removing all files L2
-    import shutil
-    for file in files:
-        seotbx.logger.debug(f"Removing: {file}")
-        if os.path.isdir(file):
-            shutil.rmtree(file)
-        else:
-            os.remove(file)
-        seotbx.logger.info(f"Deleting: {file}")
+    if b_delete_srtm:
+        files = glob.glob(f'{os.path.join(basedir, "srtm")}*')
+        # removing all files L2
+        import shutil
+        for file in files:
+            seotbx.logger.debug(f"Removing: {file}")
+            if os.path.isdir(file):
+                shutil.rmtree(file)
+            else:
+                os.remove(file)
+            seotbx.logger.info(f"Deleting: {file}")
 
     return filepath_output
 
+
 def parser_func(subparsers, mode, argparse=None):
-    ap = subparsers.add_parser(mode, help="Atmospheric correction on Sentinel2 with bands extraction in tif")
+    ap = subparsers.add_parser(mode, help="atmospheric correction on Sentinel2 with bands extraction in tif")
     ap.add_argument('args', nargs=argparse.REMAINDER)
+
 
 def application_func(args):
     seotbx.snappy.utils.check_esa_snap_installation()
