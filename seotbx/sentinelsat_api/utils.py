@@ -1,7 +1,6 @@
 import logging
 logger = logging.getLogger("seotbx.sentinelsat.utils")
 from sentinelsat import SentinelAPI, read_geojson, geojson_to_wkt
-from datetime import date
 
 SCIHUB_API_URL = "https://scihub.copernicus.eu/dhus"
 

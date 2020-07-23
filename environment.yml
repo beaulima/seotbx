@@ -11,5 +11,7 @@ dependencies:
   - seaborn
   - matplotlib
   - geopandas
+  - geoplot
+  - owslib
   - pip:
     - -r requirements.txt

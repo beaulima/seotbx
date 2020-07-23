@@ -45,8 +45,13 @@ def application_func(args):
                                                )
     seotbx.sentinelsat_api.utils.log_candidates_info(sentinel_api_obj, candidates)
 
-    products_df = sentinel_api_obj.to_dataframe(candidates)
-    
+    # GeoPandas GeoDataFrame with the metadata of the scenes and the footprints as geometries
+    products_gdf = sentinel_api_obj.to_geodataframe(candidates)
+
+
+
+    seotbx.sentinelsat_api.viz.plot_footprints(products_gdf)
+    return
     input_dir = args.save_dir
     if not os.path.exists(input_dir):
         os.makedirs(input_dir)

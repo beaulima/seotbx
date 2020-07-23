@@ -2,7 +2,8 @@ import logging
 import os
 import seotbx
 import zipfile
-logger = logging.getLogger("seotbx.snappy.apps.s2atcor")
+logger = logging.getLogger("seotbx.snappy.sentinel2.s2atcor")
+
 
 def s2atcor(args, b_saved_only_10m=True, b_delete_srtm=False):
 
