@@ -44,6 +44,8 @@ def application_func(args):
                                                     operational_mode=operational_mode
                                                )
     seotbx.sentinelsat_api.utils.log_candidates_info(sentinel_api_obj, candidates)
+
+    products_df = sentinel_api_obj.to_dataframe(candidates)
     
     input_dir = args.save_dir
     if not os.path.exists(input_dir):

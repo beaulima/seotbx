@@ -10,5 +10,6 @@ dependencies:
   - gdal
   - seaborn
   - matplotlib
+  - geopandas
   - pip:
     - -r requirements.txt
