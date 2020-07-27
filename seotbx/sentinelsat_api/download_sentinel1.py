@@ -4,7 +4,7 @@ import datetime
 import os
 import glob
 
-logger = logging.getLogger("seotbx.sentinelsat.apps.download_sentinel1")
+logger = logging.getLogger("seotbx.sentinelsat.download_sentinel1")
 
 MONTREAL_CENTRE_LAT = 45.508888
 MONTREAL_CENTRE_LONG = -73.561668
@@ -46,12 +46,9 @@ def application_func(args):
     seotbx.sentinelsat_api.utils.log_candidates_info(sentinel_api_obj, candidates)
 
     # GeoPandas GeoDataFrame with the metadata of the scenes and the footprints as geometries
-    products_gdf = sentinel_api_obj.to_geodataframe(candidates)
+    #products_gdf = sentinel_api_obj.to_geodataframe(candidates)
+    #seotbx.sentinelsat_api.viz.plot_footprints(products_gdf)
 
-
-
-    seotbx.sentinelsat_api.viz.plot_footprints(products_gdf)
-    return
     input_dir = args.save_dir
     if not os.path.exists(input_dir):
         os.makedirs(input_dir)
@@ -72,6 +69,3 @@ def application_func(args):
     return
 
 
-def registering_application():
-    from seotbx.apps import registering_application as ra
-    ra("download_sentinel1", parser_func, application_func)

@@ -2,12 +2,13 @@ import logging
 import numpy as np
 import snappy
 import os
+logger = logging.getLogger("seotbx.snappy_api.apps.sentinel1")
 
 def check_esa_snap_installation():
     SNAP_HOME = os.environ['SNAP_HOME']
-    print(f"SNAP installation: {SNAP_HOME}")
-    import snappy
-    print(f"SNAPPY installation: {snappy.__file__}")
+    logger.info(f"SNAP installation: {SNAP_HOME}")
+    logger.info(f"SNAPPY installation: {snappy.__file__}")
+    snappy.GPF.getDefaultInstance().getOperatorSpiRegistry().loadOperatorSpis()
 
 
 def isSNAPprod(prod):
