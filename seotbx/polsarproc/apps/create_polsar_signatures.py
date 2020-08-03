@@ -5,10 +5,6 @@ import numpy as np
 logger = logging.getLogger("seotbx.polsarproc.apps.create_polsar_signatures")
 
 
-def polsarsigs_parser_func(subparsers, mode, argparse=None):
-    ap = subparsers.add_parser(mode, help="create synthetic polarimetric signatures")
-    ap.add_argument("cfg_path", type=str, help="path to the session configuration file")
-    ap.add_argument("save_dir", type=str, help="path to the session output root directory")
 
 
 def compute_semi_positive_hermitian_matrix(x, spf=0, n=1):
@@ -74,12 +70,18 @@ def get_sigs_from_poisson(num_samples, p=2, spf=0, n=1):
     return compute_semi_positive_hermitian_matrix(x, spf=spf, n=n)
 
 
+def polsarsigs_parser_func(subparsers, mode, argparse=None):
+    ap = subparsers.add_parser(mode, help="create synthetic polarimetric signatures")
+    ap.add_argument("cfg_path", type=str, help="path to the session configuration file")
+    ap.add_argument("save_dir", type=str, help="path to the session output root directory")
 
 
 def polsarsigs_application_func(args):
     """Synthetic polarimetric signatures.
 
     """
+
+
 
     #config = thelper.utils.load_config(args.cfg_path)
     config = None
@@ -100,7 +102,7 @@ def polsarsigs_application_func(args):
     idx_data = []
     MAX_COUNTS = 1
 
-    NSAMPLES_PER_PRODUCTION = 1000000
+    NSAMPLES_PER_PRODUCTION = 100000
 
     spf = 1
     n = 1
@@ -129,9 +131,7 @@ def polsarsigs_application_func(args):
     #print(np.count_nonzero(data_count))
     signatures_datasets0 = np.array(selected_signatures)
     signatures_haalpha = seotbx.polsarproc.decomposition.t3_haalpha_decomposition(signatures_datasets0.transpose(1,2,0), False)
-    seotbx.polsarproc.decomposition.haalpha_plot(signatures_haalpha)
-    halpha_data0 = np.array(halpha_data)
-    seotbx.polsarproc.decomposition.haalpha_plot(halpha_data0.transpose(1,0))
+    seotbx.polsarproc.viz.haalpha_plot(signatures_haalpha)
     #for k in range(len(idx_data)):
     #    idx = idx_data[k]
     #    h = halpha_data[k]

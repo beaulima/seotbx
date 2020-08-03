@@ -1,97 +1,8 @@
 import logging
-
 logger = logging.getLogger("pyatcortbx.polsarproc.decomposition")
 import numpy as np
-import scipy
 import seotbx
 import seotbx.polsarproc.definitions as defs
-import matplotlib.pyplot as plt
-
-EPS = 1e-10
-RAD2DEG = 180.0 / np.pi
-LOG3 = np.log(3)
-
-import seotbx
-import seotbx.polsarproc.test_paths as ts
-import seotbx.polsarproc.definitions as defs
-
-roi = ts.ROI
-
-
-def curve1_halpha():
-    """
-     see. Polarization (p.99)
-    :return:
-    """
-    M_In = []
-    for m in np.arange(0, 1.0 + 0.1, 0.01):
-        M_In.append([[1, 0, 0], [0, m, 0], [0, 0, m]])
-    M_In = np.array(M_In).transpose(1, 2, 0)
-    halpha = seotbx.polsarproc.decomposition.t3_haalpha_decomposition(M_In)
-    return halpha
-
-def curve2_halpha():
-    """
-    see. Polarization (p.99)
-    :return:
-    """
-    M_In = []
-    step = 0.01
-    for m in np.arange(0, 0.0001 + 0.00001, 0.00001):
-        M_In.append([[0, 0, 0], [0, 1, 0], [0, 0, 2*m]])
-    for m in np.arange(0.0001, 0.5 + step, step):
-        M_In.append([[0, 0, 0], [0, 1, 0], [0, 0, 2*m]])
-    for m in np.arange(0.5, 1.0 + step, step):
-        M_In.append([[2*m-1, 0, 0], [0, 1, 0], [0, 0, 1]])
-    M_In = np.array(M_In).transpose(1, 2, 0)
-    halpha = seotbx.polsarproc.decomposition.t3_haalpha_decomposition(M_In)
-    return halpha
-
-
-def haalpha_plot(M_in, title=None, bshow=True, save_path=None):
-    import seaborn as sns
-    sns.set()
-    import matplotlib.pyplot as plt
-
-    MARKER_SIZE = 1
-    curve1 = curve1_halpha()
-    curve2 = curve2_halpha()
-
-    plt.scatter(M_in[defs.Entropy], M_in[defs.Alpha], s=MARKER_SIZE)
-    plt.xlabel(r"Entropy ($H$)")
-    plt.ylabel(r"$\alpha$ [$^{\circ}$]")
-    if title is None:
-        plt.title(r"$H/\alpha$ diagram")
-
-    plt.plot(curve1[defs.Entropy], curve1[defs.Alpha], 'r')
-    plt.plot(curve2[defs.Entropy], curve2[defs.Alpha], 'g')
-    plt.xlim(0, 1.0)
-    plt.ylim(0, 90.0)
-    if bshow:
-        plt.show()
-
-    plt.scatter(M_in[defs.Anisotropy], M_in[defs.Alpha], s=MARKER_SIZE)
-    plt.xlabel(r"Anisotropy ($A$)")
-    plt.ylabel(r"$\alpha$ [$^{\circ}$]")
-    if title is None:
-        plt.title(r"$A/\alpha$ diagram")
-    plt.xlim(0, 1.0)
-    plt.ylim(0, 90.0)
-    if bshow:
-        plt.show()
-
-    plt.scatter(M_in[defs.Entropy], M_in[defs.Anisotropy], s=MARKER_SIZE)
-    plt.xlabel(r"Entropy ($H$)")
-    plt.ylabel(r"Anisotropy ($A$)")
-    if title is None:
-        plt.title(r"$H/A$ diagram")
-    plt.xlim(0, 1.0)
-    plt.ylim(0, 1.0)
-    plt.plot(curve1[defs.Entropy], curve1[defs.Anisotropy], 'r')
-    plt.plot(curve2[defs.Entropy], curve2[defs.Anisotropy], 'g')
-
-    if bshow:
-        plt.show()
 
 
 def t3_haalpha_decomposition(M_in, full_computation=True):
@@ -122,20 +33,20 @@ def t3_haalpha_decomposition(M_in, full_computation=True):
     V1 = V[1, :]
     V2 = V[2, :]
     lambdak[lambdak < 0] = 0.0
-    pk = lambdak / (np.sum(lambdak, axis=0) + EPS)
+    pk = lambdak / (np.sum(lambdak, axis=0) + seotbx.utils.const.EPS)
     pk[pk > 1.0] = 1.0
     pk[pk < 0.0] = 0.0
-    alphak = np.arccos(np.absolute(V0)) * RAD2DEG
+    alphak = np.arccos(np.absolute(V0)) * seotbx.utils.const.RAD2DEG
     if full_computation:
-        betak = np.arctan2(np.absolute(V2), EPS + np.absolute(V1)) * RAD2DEG
-        phik = np.arctan2(V0.imag, EPS + V0.real)
-        deltak = np.arctan2(V1.imag, EPS + V1.real) - phik
-        deltak = np.arctan2(np.sin(deltak), np.cos(deltak) + EPS) * RAD2DEG
-        gammak = np.arctan2(V2.imag, EPS + V2.real) - phik
-        gammak = np.arctan2(np.sin(gammak), np.cos(gammak) + EPS) * RAD2DEG
-    Entropy = -np.sum(pk * np.log(pk + EPS), axis=0) / LOG3
+        betak = np.arctan2(np.absolute(V2), seotbx.utils.const.EPS + np.absolute(V1)) * seotbx.utils.const.RAD2DEG
+        phik = np.arctan2(V0.imag, seotbx.utils.const.EPS + V0.real)
+        deltak = np.arctan2(V1.imag, seotbx.utils.const.EPS + V1.real) - phik
+        deltak = np.arctan2(np.sin(deltak), np.cos(deltak) + seotbx.utils.const.EPS) * seotbx.utils.const.RAD2DEG
+        gammak = np.arctan2(V2.imag, seotbx.utils.const.EPS + V2.real) - phik
+        gammak = np.arctan2(np.sin(gammak), np.cos(gammak) + seotbx.utils.const.EPS) * seotbx.utils.const.RAD2DEG
+    Entropy = -np.sum(pk * np.log(pk + seotbx.utils.const.EPS), axis=0) / seotbx.utils.const.LOG3
     Entropy[Entropy < 0] = 0.0
-    Anisotropy = (pk[1] - pk[2]) / (pk[1] + pk[2] + EPS)
+    Anisotropy = (pk[1] - pk[2]) / (pk[1] + pk[2] + seotbx.utils.const.EPS)
     Alpha = np.sum(pk * alphak, axis=0)
     if full_computation:
         Beta = np.sum(pk * betak, axis=0)

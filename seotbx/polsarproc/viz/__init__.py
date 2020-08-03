@@ -1,11 +1,11 @@
 import logging
-import seotbx.polsarproc.definitions as defs
-
 logger = logging.getLogger("pyatcortbx.viz")
-
+import seotbx
+import seotbx.polsarproc.definitions as defs
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
+
 
 def linear_transform(x0, y0, x1, y1):
     m = (y1 - y0) / float(x1 - x0)
@@ -83,3 +83,96 @@ def rgb_pauli_from_t3_polsar(raster_bands, min_q=0.05, max_q=0.95, min_v=0.0, ma
     rgb = raster_bands[[defs.PAULI_T3_VIZ_IDX["R"], defs.PAULI_T3_VIZ_IDX["G"], defs.PAULI_T3_VIZ_IDX["B"]]]
     rgb = linear_q_stretching(rgb, min_q, max_q, min_v, max_v)
     return rgb
+
+
+def curve1_halpha():
+    """
+     see. Polarization (p.99)
+    :return:
+    """
+    M_In = []
+    for m in np.arange(0, 1.0 + 0.1, 0.01):
+        M_In.append([[1, 0, 0], [0, m, 0], [0, 0, m]])
+    M_In = np.array(M_In).transpose(1, 2, 0)
+    halpha = seotbx.polsarproc.decomposition.t3_haalpha_decomposition(M_In)
+    return halpha
+
+
+def curve2_halpha():
+    """
+    see. Polarization (p.99)
+    :return:
+    """
+    M_In = []
+    step = 0.01
+    for m in np.arange(0, 0.0001 + 0.00001, 0.00001):
+        M_In.append([[0, 0, 0], [0, 1, 0], [0, 0, 2*m]])
+    for m in np.arange(0.0001, 0.5 + step, step):
+        M_In.append([[0, 0, 0], [0, 1, 0], [0, 0, 2*m]])
+    for m in np.arange(0.5, 1.0 + step, step):
+        M_In.append([[2*m-1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    M_In = np.array(M_In).transpose(1, 2, 0)
+    halpha = seotbx.polsarproc.decomposition.t3_haalpha_decomposition(M_In)
+    return halpha
+
+
+def haalpha_plot(M_in, bshow: bool=True, save_dirpath: str = ""):
+    """
+    Plot the three plots (HAlpha, HA, AAlpha) from input M_in
+    """
+    sns.set()
+
+    MARKER_SIZE = 1
+    curve1 = curve1_halpha()
+    curve2 = curve2_halpha()
+
+    plt.scatter(M_in[defs.Entropy], M_in[defs.Alpha], s=MARKER_SIZE)
+    plt.xlabel(r"Entropy ($H$)")
+    plt.ylabel(r"$\alpha$ [$^{\circ}$]")
+    plt.title(r"$H/\alpha$ diagram")
+
+    plt.plot(curve1[defs.Entropy], curve1[defs.Alpha], 'r')
+    plt.plot(curve2[defs.Entropy], curve2[defs.Alpha], 'g')
+    plt.xlim(0, 1.0)
+    plt.ylim(0, 90.0)
+    dtobj = seotbx.utils.get_now()
+    if save_dirpath != "":
+        fig_name = seotbx.utils.create_path_with_timestamp(dirpath=save_dirpath,
+                                                           basename="HALPHA",
+                                                           ext="png",
+                                                           dtobj=dtobj)
+        plt.savefig(fig_name)
+    if bshow:
+        plt.show()
+
+    plt.scatter(M_in[defs.Anisotropy], M_in[defs.Alpha], s=MARKER_SIZE)
+    plt.xlabel(r"Anisotropy ($A$)")
+    plt.ylabel(r"$\alpha$ [$^{\circ}$]")
+    plt.title(r"$A/\alpha$ diagram")
+    plt.xlim(0, 1.0)
+    plt.ylim(0, 90.0)
+    if save_dirpath != "":
+        fig_name = seotbx.utils.create_path_with_timestamp(dirpath=save_dirpath,
+                                                           basename="AALPHA",
+                                                           ext="png",
+                                                           dtobj=dtobj)
+        plt.savefig(fig_name)
+    if bshow:
+        plt.show()
+
+    plt.scatter(M_in[defs.Entropy], M_in[defs.Anisotropy], s=MARKER_SIZE)
+    plt.xlabel(r"Entropy ($H$)")
+    plt.ylabel(r"Anisotropy ($A$)")
+    plt.title(r"$H/A$ diagram")
+    plt.xlim(0, 1.0)
+    plt.ylim(0, 1.0)
+    plt.plot(curve1[defs.Entropy], curve1[defs.Anisotropy], 'r')
+    plt.plot(curve2[defs.Entropy], curve2[defs.Anisotropy], 'g')
+    if save_dirpath != "":
+        fig_name = seotbx.utils.create_path_with_timestamp(dirpath=save_dirpath,
+                                                           basename="HA",
+                                                           ext="png",
+                                                           dtobj=dtobj)
+        plt.savefig(fig_name)
+    if bshow:
+        plt.show()
