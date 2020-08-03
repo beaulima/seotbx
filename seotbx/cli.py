@@ -80,8 +80,5 @@ class Application:
 
 
 if __name__ == "__main__":
-    #polsartbx.test.test_t3_haalpha_decomposition()
-    #polsartbx.test.test_gdal_read_t3()
-    #polsartbx.test.test_gdal_read_rs2()
     mainApp = Application()
     mainApp.main()

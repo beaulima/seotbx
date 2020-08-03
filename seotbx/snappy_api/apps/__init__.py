@@ -29,8 +29,8 @@ def registering_application():
     from seotbx.apps import registering_application as ra
     ra("gpt", gpt_parser_func, gpt_application_func)
     ra("s2atcor", s2atcor_parser_func, s2atcor_application_func)
-    ra("s1preprocess", seotbx.snappy_api.sentinel1.preprocess.parser_func,
-                       seotbx.snappy_api.sentinel1.preprocess.application_func)
+    ra("s1preprocess", seotbx.snappy_api.sentinel1.s1preprocess.s1process_parser_func,
+       seotbx.snappy_api.sentinel1.s1preprocess.s1process_application_func)
 
 
 

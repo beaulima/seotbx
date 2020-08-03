@@ -27,7 +27,7 @@ def curve1_halpha():
     for m in np.arange(0, 1.0 + 0.1, 0.01):
         M_In.append([[1, 0, 0], [0, m, 0], [0, 0, m]])
     M_In = np.array(M_In).transpose(1, 2, 0)
-    halpha = polsartbx.polsarproc.decomposition.t3_haalpha_decomposition(M_In)
+    halpha = seotbx.polsarproc.decomposition.t3_haalpha_decomposition(M_In)
     return halpha
 
 def curve2_halpha():
@@ -44,7 +44,7 @@ def curve2_halpha():
     for m in np.arange(0.5, 1.0 + step, step):
         M_In.append([[2*m-1, 0, 0], [0, 1, 0], [0, 0, 1]])
     M_In = np.array(M_In).transpose(1, 2, 0)
-    halpha = polsartbx.polsarproc.decomposition.t3_haalpha_decomposition(M_In)
+    halpha = seotbx.polsarproc.decomposition.t3_haalpha_decomposition(M_In)
     return halpha
 
 

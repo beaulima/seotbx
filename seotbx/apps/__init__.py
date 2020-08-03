@@ -8,6 +8,4 @@ def registering_application(application_name, parser_func, application_func):
 def get_applications_table():
     return APPLICATIONS_TABLE
 
-
-
 logger = logging.getLogger("seotbx.apps")
