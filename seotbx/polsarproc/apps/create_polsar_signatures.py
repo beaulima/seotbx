@@ -1,12 +1,8 @@
 import logging
 import seotbx
-import os
 import numpy as np
 
 logger = logging.getLogger("seotbx.polsarproc.apps.create_polsar_signatures")
-
-
-
 
 def compute_semi_positive_hermitian_matrix(x, spf=0, n=1):
     g = (x.conjugate().T).transpose(2, 0, 1)
@@ -30,40 +26,11 @@ def compute_semi_positive_hermitian_matrix(x, spf=0, n=1):
     sigs0 = np.array(sigs0)
     return sigs0
 
-# def get_cov3_mat(Shh, Shv, Svv):
-#
-#     shh = (Shh * Shh.conjugate()).real
-#     shv = (Shv * Shv.conjugate()).real
-#     svv = (Svv * Svv.conjugate()).real
-#     rho1 = Shh * Svv.conjugate() / np.sqrt(shh * svv)
-#     rho2 = Shh * Shv.conjugate() / np.sqrt(shh * shv)
-#     rho3 = Shv * Svv.conjugate() / np.sqrt(shv * svv)
-#     ep = shv / shh
-#     gm = svv / shh
-#     A=1.0
-#     B=np.sqrt(2*ep)*rho2
-#     C= rho1*np.sqrt(gm)
-#     D=2*ep
-#     E=np.sqrt(2*gm*ep)*rho3
-#     F=gm
-#     cov = shh* np.array([[A,B,C],
-#               [B.conjugate(),D,E],
-#               [C.conjugate(),E.conjugate(),F]], dtype=complex)
-#     L = np.linalg.cholesky(cov)
-#     return cov
-
-
 def get_sigs_from_random(num_samples, minmax=(-10, 10), spf=0, n=1):
     MIN = minmax[0]
     MAX = minmax[1]
     x = np.random.uniform(MIN, MAX, (num_samples, 3, 3)) + 1j * np.random.uniform(MIN, MAX, (3, 3))
-
-    Shh = np.random.uniform(-1,1)+ 1j*np.random.uniform(-1,1)
-    Shv = np.random.uniform(-1,1)+ 1j*np.random.uniform(-1,1)
-    Svv = np.random.uniform(-1,1)+ 1j*np.random.uniform(-1,1)
-    #cov = get_cov3_mat(Shh, Shv, Svv)
     return compute_semi_positive_hermitian_matrix(x, spf=spf, n=n)
-
 
 def get_sigs_from_poisson(num_samples, p=2, spf=0, n=1):
     P = p
@@ -113,7 +80,7 @@ def polsarsigs_application_func(args):
     niters = 0
     while nselections/float(nposs) < MAX_PC:
         signatures_datasets = []
-        for j in range(1):
+        for j in range(50):
             if np.random.randint(0,1):
                 func = get_sigs_from_random
             else:

@@ -116,21 +116,54 @@ def curve2_halpha():
     return halpha
 
 
-def haalpha_plot(M_in, bshow: bool=True, save_dirpath: str = "", dtobj=None):
+def haalpha_plot(M_in, bshow: bool=True, save_dirpath: str = "", dtobj=None,bclasscolor=True):
     """
     Plot the three plots (HAlpha, HA, AAlpha) from input M_in
     """
     sns.set()
 
-    MARKER_SIZE = 1
+    MARKER_SIZE = 0.5
+    ALPHA = 0.5
     curve1 = curve1_halpha()
     curve2 = curve2_halpha()
-
-    plt.scatter(M_in[defs.Entropy], M_in[defs.Alpha], s=MARKER_SIZE)
+    if bclasscolor:
+        M_in0 = M_in.transpose(1, 0)
+        for key in defs.HALPHA_DIV:
+            info = defs.HALPHA_DIV[key]
+            color = info[3]
+            h_lim = info[4]
+            alpha_lim = info[5]
+            idx_min_h = M_in0[:, defs.Entropy] >= h_lim[0]
+            idx_max_h = M_in0[:, defs.Entropy] < h_lim[1]
+            idx_min_alpha = M_in0[:, defs.Alpha] >= alpha_lim[0]
+            idx_max_alpha = M_in0[:, defs.Alpha] < alpha_lim[1]
+            idx = idx_min_h & idx_max_h & idx_min_alpha & idx_max_alpha
+            plt.scatter(M_in[defs.Entropy][idx], M_in[defs.Alpha][idx], s=MARKER_SIZE, alpha=ALPHA, color=color)
+    else:
+        plt.scatter(M_in[defs.Entropy], M_in[defs.Alpha], s=MARKER_SIZE,alpha=ALPHA)
     plt.xlabel(r"Entropy ($H$)")
     plt.ylabel(r"$\alpha$ [$^{\circ}$]")
     plt.title(r"$H/\alpha$ diagram")
 
+    plt.plot([defs.lim_H1,defs.lim_H1], [0.0, 90.0], 'k--')
+    plt.plot([defs.lim_H2, defs.lim_H2], [0.0, 90.0], 'k--')
+
+    plt.plot([0.0, defs.lim_H2], [defs.lim_al3,defs.lim_al3], 'k--')
+    plt.plot([0.0, defs.lim_H2], [defs.lim_al4,defs.lim_al4], 'k--')
+
+    plt.plot([defs.lim_H2, defs.lim_H1], [defs.lim_al2, defs.lim_al2], 'k--')
+    plt.plot([defs.lim_H2, defs.lim_H1], [defs.lim_al5, defs.lim_al5], 'k--')
+
+    plt.plot([defs.lim_H1, 1.0], [defs.lim_al1, defs.lim_al1], 'k--')
+    plt.plot([defs.lim_H1, 1.0], [defs.lim_al5, defs.lim_al5], 'k--')
+
+
+    for key in defs.HALPHA_DIV:
+        info = defs.HALPHA_DIV[key]
+        xy = info[2]
+        name = info[0]
+        plt.text(xy[0], xy[1], rf"${name}$")
+        
     plt.plot(curve1[defs.Entropy], curve1[defs.Alpha], 'r')
     plt.plot(curve2[defs.Entropy], curve2[defs.Alpha], 'g')
     plt.xlim(0, 1.0)
