@@ -5,7 +5,7 @@ import seotbx
 import seotbx.polsarproc.definitions as defs
 
 
-def t3_haalpha_decomposition(M_in, full_computation=True):
+def t3_haalpha_decomposition(M_in, full_computation: bool = True):
     """
     :param M_in: 3x3x...
     :param full_computation:

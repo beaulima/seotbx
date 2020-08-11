@@ -116,7 +116,7 @@ def curve2_halpha():
     return halpha
 
 
-def haalpha_plot(M_in, bshow: bool=True, save_dirpath: str = ""):
+def haalpha_plot(M_in, bshow: bool=True, save_dirpath: str = "", dtobj=None):
     """
     Plot the three plots (HAlpha, HA, AAlpha) from input M_in
     """
@@ -135,7 +135,8 @@ def haalpha_plot(M_in, bshow: bool=True, save_dirpath: str = ""):
     plt.plot(curve2[defs.Entropy], curve2[defs.Alpha], 'g')
     plt.xlim(0, 1.0)
     plt.ylim(0, 90.0)
-    dtobj = seotbx.utils.get_now()
+    if dtobj is None:
+        dtobj = seotbx.utils.get_now()
     if save_dirpath != "":
         fig_name = seotbx.utils.create_path_with_timestamp(dirpath=save_dirpath,
                                                            basename="HALPHA",
