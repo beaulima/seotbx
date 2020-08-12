@@ -127,7 +127,16 @@ def X3_to_MX3(M_in, span_normalized=False):
 
 
 def MX3_to_X3(M_in):
-    M_out = np.zeros((9, M_in.shape[2], M_in.shape[3]))
+    "Convert a 3x3xHxW in a 9xHxW components"
+
+    assert M_in.shape[0] == 3
+    assert M_in.shape[1] == 3
+    original_shape = M_in.shape
+    finale_shape = [9]
+    if len(original_shape) != 2:
+        for d in original_shape[2:len(original_shape)]:
+            finale_shape.append(d)
+    M_out = np.zeros(finale_shape)
     M_out[defs.M11] = M_in[0, 0].real
     M_out[defs.M12_real] = M_in[0, 1].real
     M_out[defs.M12_imag] = M_in[0, 1].imag

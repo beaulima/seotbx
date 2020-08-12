@@ -13,5 +13,6 @@ dependencies:
   - geopandas
   - geoplot
   - owslib
+  - umap-learn
   - pip:
     - -r requirements.txt

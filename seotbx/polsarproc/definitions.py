@@ -1,3 +1,8 @@
+import numpy as np
+
+# list of constants
+SQRT2 = np.sqrt(2.)
+
 # TENSOR_SHAPE
 TS_BCHW = 0
 TS_BHWC = 1
@@ -196,6 +201,12 @@ lim_al4 = 42.
 lim_al5 = 40.
 lim_H1 = 0.9
 lim_H2 = 0.5
+lim_H_min = 0.0
+lim_H_max = 1.0
+lim_A_min = 0.0
+lim_A_max = 1.0
+lim_al_min = 0.0
+lim_al_max = 90.0
 
 Z1 = 0
 Z2 = 1
@@ -208,16 +219,17 @@ Z8 = 7
 Z9 = 8
 
 HALPHA_DIV = {
-    "Z1": ("Z1", Z1, (0.01, 86.0), (1.0, 0.0, 0.0), (0.0, lim_H2), (lim_al3, 90.0)),
-    "Z2": ("Z2", Z2, (0.01, 43.5), (1.0, 0.0, 1.0), (0.0, lim_H2), (lim_al4, lim_al3)),
-    "Z3": ("Z3", Z3, (0.01, 1.0), (0.0, 0.0, 1.0),  (0.0, lim_H2), (0.0, lim_al4)),
-    "Z4": ("Z4", Z4, (0.51, 86.0), (0.0, 1.0, 0.0),  (lim_H2, lim_H1), (lim_al2, 90.0)),
-    "Z5": ("Z5", Z5, (0.51, 43.5), (1.0, 0.5, 0.0),  (lim_H2, lim_H1), (lim_al5, lim_al2)),
-    "Z6": ("Z6", Z6, (0.51, 1.0), (0.0, 1.0, 1.0),  (lim_H2, lim_H1), (0.0, lim_al5)),
-    "Z7": ("Z7", Z7, (0.95, 86.0), (0.5, 0.5, 0.5),  (lim_H1, 1.0), (lim_al1, 90.0)),
-    "Z8": ("Z8", Z8, (0.95, 41.0), (1.0, 1.0, 0.0),  (lim_H1, 1.0), (lim_al5, lim_al1)),
-    "Z9": ("Z9", Z9, (0.95, 1.0), (1.0, 1.0, 0.0),  (lim_H1, 1.0), (0.0, lim_al5)),
+    "Z1": ("Z1", Z1, (0.01, 86.0), (1.0, 0.0, 0.0), (lim_H_min, lim_H2), (lim_al3, lim_al_max), 'Dihedral Reflector'),
+    "Z2": ("Z2", Z2, (0.01, 43.5), (1.0, 0.0, 1.0), (lim_H_min, lim_H2), (lim_al4, lim_al3), 'Dipole'),
+    "Z3": ("Z3", Z3, (0.01, 1.00), (0.0, 0.0, 1.0), (lim_H_min, lim_H2), (lim_al_min, lim_al4), 'Bragg Surface'),
+    "Z4": ("Z4", Z4, (0.51, 86.0), (0.0, 1.0, 0.0), (lim_H2, lim_H1), (lim_al2, lim_al_max), 'Double Reflection'),
+    "Z5": ("Z5", Z5, (0.51, 43.5), (1.0, 0.5, 0.0), (lim_H2, lim_H1), (lim_al5, lim_al2), 'Anisotropic Particles'),
+    "Z6": ("Z6", Z6, (0.51, 1.00), (0.0, 1.0, 1.0), (lim_H2, lim_H1), (lim_al_min, lim_al5), 'Random Surface'),
+    "Z7": ("Z7", Z7, (0.95, 86.0), (0.5, 0.5, 0.5), (lim_H1, lim_H_max), (lim_al1, lim_al_max), 'Complex Structures'),
+    "Z8": ("Z8", Z8, (0.95, 41.0), (1.0, 1.0, 0.0), (lim_H1, lim_H_max), (lim_al5, lim_al1), 'Random Anisotropic Scatterers'),
+    "Z9": ("Z9", Z9, (0.95, 1.00), (1.0, 1.0, 0.0), (lim_H1, lim_H_max), (lim_al_min, lim_al5), 'Not-Feasible'),
 }
+OMITCLASS = "Z9"
 
 import numpy as np
 
