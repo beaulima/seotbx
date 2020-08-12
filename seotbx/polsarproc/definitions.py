@@ -132,6 +132,13 @@ T3_IDX = {"T11": T11,
           "T23_real": T23_real, "T23_imag": T23_imag,
           "T33": T33}
 
+T3_IDX_NAME = ["T11",
+          "Re{T12}", "Im{T12}",
+          "Re{T13}", "Im{T13}",
+          "T22",
+          "Re{T23}","Im{T23}",
+          "T33"]
+
 # Matrix covariance index definition
 C11 = 0
 C12_real = 1
@@ -217,6 +224,8 @@ Z6 = 5
 Z7 = 6
 Z8 = 7
 Z9 = 8
+
+HALPHA_DIV_IDX=["Z1","Z2","Z3","Z4","Z5","Z6","Z7","Z8","Z9"]
 
 HALPHA_DIV = {
     "Z1": ("Z1", Z1, (0.01, 86.0), (1.0, 0.0, 0.0), (lim_H_min, lim_H2), (lim_al3, lim_al_max), 'Dihedral Reflector'),

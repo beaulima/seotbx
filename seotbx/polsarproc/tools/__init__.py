@@ -62,3 +62,11 @@ def polsar_n_looks_simulation(M_in, n_looks: int, n_samples: int):
         # compute multi looks simulation
         M_out += (M_out_1look / n_looks)
     return M_out
+
+def span_normalize_M3(M_in):
+    """
+    Normalize the matrix by the span
+    """
+    assert M_in.shape[0] == 3 and M_in.shape[1] == 3
+    span = M_in[0,0].real + M_in[1,1].real +  + M_in[2,2].real
+    return M_in / span

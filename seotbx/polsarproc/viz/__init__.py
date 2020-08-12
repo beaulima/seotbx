@@ -116,7 +116,7 @@ def curve2_halpha():
     return halpha
 
 
-def haalpha_plot(M_in, bshow: bool=True, save_dirpath: str = "", dtobj=None,
+def halpha_plot_handle(M_in,
                  bclasscolor=True,
                  marker_size=0.5,
                  alpha=0.5):
@@ -124,7 +124,6 @@ def haalpha_plot(M_in, bshow: bool=True, save_dirpath: str = "", dtobj=None,
     Plot the three plots (HAlpha, HA, AAlpha) from input M_in
     """
     sns.set()
-
     curve1 = curve1_halpha()
     curve2 = curve2_halpha()
     if bclasscolor:
@@ -141,8 +140,6 @@ def haalpha_plot(M_in, bshow: bool=True, save_dirpath: str = "", dtobj=None,
             idx_min_alpha = M_in0[:, defs.Alpha] >= alpha_lim[0]
             idx_max_alpha = M_in0[:, defs.Alpha] < alpha_lim[1]
             idx = idx_min_h & idx_max_h & idx_min_alpha & idx_max_alpha
-            toto = M_in[defs.Alpha][idx]
-            toto1 = M_in[defs.Entropy][idx]
             plt.scatter(M_in[defs.Entropy][idx], M_in[defs.Alpha][idx], s=marker_size, alpha=alpha, color=color)
 
     else:
@@ -174,34 +171,96 @@ def haalpha_plot(M_in, bshow: bool=True, save_dirpath: str = "", dtobj=None,
     plt.plot(curve2[defs.Entropy], curve2[defs.Alpha], 'g')
     plt.xlim(defs.lim_H_min, defs.lim_H_max)
     plt.ylim(defs.lim_al_min, defs.lim_al_max)
+
+
+def haalpha_plot(M_in, bshow: bool=True, save_dirpath: str = "", dtobj=None,
+                 bclasscolor=True,
+                 marker_size=0.5,
+                 alpha=0.5,
+                 suffix=""):
+    """
+    Plot the three plots (HAlpha, HA, AAlpha) from input M_in
+    """
+    sns.set()
+
+    curve1 = curve1_halpha()
+    curve2 = curve2_halpha()
+
+    plt.clf()
+    halpha_plot_handle(M_in=M_in,
+                 bclasscolor=bclasscolor,
+                 marker_size=marker_size,
+                 alpha=alpha)
     if dtobj is None:
         dtobj = seotbx.utils.get_now()
 
     if save_dirpath != "":
+        basename ="HALPHA"
+        if suffix != "":
+            basename = f"{basename}_{suffix}"
         fig_name = seotbx.utils.create_path_with_timestamp(dirpath=save_dirpath,
-                                                           basename="HALPHA",
+                                                           basename=basename,
                                                            ext="png",
                                                            dtobj=dtobj)
         plt.savefig(fig_name)
     if bshow:
         plt.show()
 
-    plt.scatter(M_in[defs.Anisotropy], M_in[defs.Alpha], s=marker_size)
+    plt.clf()
+    if bclasscolor:
+        M_in0 = M_in.transpose(1, 0)
+        for key in defs.HALPHA_DIV:
+            if key == defs.OMITCLASS:
+                continue
+            info = defs.HALPHA_DIV[key]
+            color = info[3]
+            h_lim = info[4]
+            alpha_lim = info[5]
+            idx_min_h = M_in0[:, defs.Entropy] >= h_lim[0]
+            idx_max_h = M_in0[:, defs.Entropy] < h_lim[1]
+            idx_min_alpha = M_in0[:, defs.Alpha] >= alpha_lim[0]
+            idx_max_alpha = M_in0[:, defs.Alpha] < alpha_lim[1]
+            idx = idx_min_h & idx_max_h & idx_min_alpha & idx_max_alpha
+            plt.scatter(M_in[defs.Anisotropy][idx], M_in[defs.Alpha][idx], s=marker_size, alpha=alpha, color=color)
+
+    else:
+        plt.scatter(M_in[defs.Anisotropy], M_in[defs.Alpha], s=marker_size,alpha=alpha)
     plt.xlabel(r"Anisotropy ($A$)")
     plt.ylabel(r"$\alpha$ [$^{\circ}$]")
     plt.title(r"$A/\alpha$ diagram")
     plt.xlim(defs.lim_A_min, defs.lim_A_max)
     plt.ylim(defs.lim_al_min, defs.lim_al_max)
     if save_dirpath != "":
+        basename = "AALPHA"
+        if suffix != "":
+            basename = f"{basename}_{suffix}"
         fig_name = seotbx.utils.create_path_with_timestamp(dirpath=save_dirpath,
-                                                           basename="AALPHA",
+                                                           basename=basename,
                                                            ext="png",
                                                            dtobj=dtobj)
         plt.savefig(fig_name)
     if bshow:
         plt.show()
 
-    plt.scatter(M_in[defs.Entropy], M_in[defs.Anisotropy], s=marker_size)
+    plt.clf()
+    if bclasscolor:
+        M_in0 = M_in.transpose(1, 0)
+        for key in defs.HALPHA_DIV:
+            if key == defs.OMITCLASS:
+                continue
+            info = defs.HALPHA_DIV[key]
+            color = info[3]
+            h_lim = info[4]
+            alpha_lim = info[5]
+            idx_min_h = M_in0[:, defs.Entropy] >= h_lim[0]
+            idx_max_h = M_in0[:, defs.Entropy] < h_lim[1]
+            idx_min_alpha = M_in0[:, defs.Alpha] >= alpha_lim[0]
+            idx_max_alpha = M_in0[:, defs.Alpha] < alpha_lim[1]
+            idx = idx_min_h & idx_max_h & idx_min_alpha & idx_max_alpha
+            plt.scatter(M_in[defs.Entropy][idx], M_in[defs.Anisotropy][idx], s=marker_size, alpha=alpha, color=color)
+
+    else:
+        plt.scatter(M_in[defs.Entropy], M_in[defs.Anisotropy], s=marker_size)
     plt.xlabel(r"Entropy ($H$)")
     plt.ylabel(r"Anisotropy ($A$)")
     plt.title(r"$H/A$ diagram")
@@ -210,8 +269,11 @@ def haalpha_plot(M_in, bshow: bool=True, save_dirpath: str = "", dtobj=None,
     plt.plot(curve1[defs.Entropy], curve1[defs.Anisotropy], 'r')
     plt.plot(curve2[defs.Entropy], curve2[defs.Anisotropy], 'g')
     if save_dirpath != "":
+        basename = "HA"
+        if suffix != "":
+            basename = f"{basename}_{suffix}"
         fig_name = seotbx.utils.create_path_with_timestamp(dirpath=save_dirpath,
-                                                           basename="HA",
+                                                           basename=basename,
                                                            ext="png",
                                                            dtobj=dtobj)
         plt.savefig(fig_name)
