@@ -227,17 +227,32 @@ Z9 = 8
 
 HALPHA_DIV_IDX=["Z1","Z2","Z3","Z4","Z5","Z6","Z7","Z8","Z9"]
 
-HALPHA_DIV = {
-    "Z1": ("Z1", Z1, (0.01, 86.0), (1.0, 0.0, 0.0), (lim_H_min, lim_H2), (lim_al3, lim_al_max), 'Dihedral Reflector'),
-    "Z2": ("Z2", Z2, (0.01, 43.5), (1.0, 0.0, 1.0), (lim_H_min, lim_H2), (lim_al4, lim_al3), 'Dipole'),
-    "Z3": ("Z3", Z3, (0.01, 1.00), (0.0, 0.0, 1.0), (lim_H_min, lim_H2), (lim_al_min, lim_al4), 'Bragg Surface'),
-    "Z4": ("Z4", Z4, (0.51, 86.0), (0.0, 1.0, 0.0), (lim_H2, lim_H1), (lim_al2, lim_al_max), 'Double Reflection'),
-    "Z5": ("Z5", Z5, (0.51, 43.5), (1.0, 0.5, 0.0), (lim_H2, lim_H1), (lim_al5, lim_al2), 'Anisotropic Particles'),
-    "Z6": ("Z6", Z6, (0.51, 1.00), (0.0, 1.0, 1.0), (lim_H2, lim_H1), (lim_al_min, lim_al5), 'Random Surface'),
-    "Z7": ("Z7", Z7, (0.95, 86.0), (0.5, 0.5, 0.5), (lim_H1, lim_H_max), (lim_al1, lim_al_max), 'Complex Structures'),
-    "Z8": ("Z8", Z8, (0.95, 41.0), (1.0, 1.0, 0.0), (lim_H1, lim_H_max), (lim_al5, lim_al1), 'Random Anisotropic Scatterers'),
-    "Z9": ("Z9", Z9, (0.95, 1.00), (1.0, 1.0, 0.0), (lim_H1, lim_H_max), (lim_al_min, lim_al5), 'Not-Feasible'),
+HALPHA_CLASS_DEF = {
+    "Z1": {"id": Z1, "id_pos": (0.01, 86.0), "color": (1.0, 0.0, 0.0),
+           "h_lims": (lim_H_min, lim_H2), "al_lims": (lim_al3, lim_al_max), "en_id": 'Dihedral Reflector'},
+    "Z2": {"id": Z2, "id_pos": (0.01, 43.5), "color": (1.0, 0.0, 1.0),
+           "h_lims": (lim_H_min, lim_H2), "al_lims": (lim_al4, lim_al3),
+           "en_id": 'Dipole'},
+    "Z3": {"id": Z3, "id_pos": (0.01, 1.00), "color": (0.0, 0.0, 1.0),
+           "h_lims": (lim_H_min, lim_H2), "al_lims": (lim_al_min, lim_al4), "en_id": 'Bragg Surface'},
+    "Z4": {"id": Z4, "id_pos": (0.51, 86.0), "color": (0.0, 1.0, 0.0),
+           "h_lims": (lim_H2, lim_H1), "al_lims": (lim_al2, lim_al_max),
+           "en_id": 'Double Reflection'},
+    "Z5": {"id": Z5, "id_pos": (0.51, 43.5), "color": (1.0, 0.5, 0.0),
+           "h_lims": (lim_H2, lim_H1), "al_lims": (lim_al5, lim_al2),
+           "en_id": 'Anisotropic Particles'},
+    "Z6": {"id": Z6, "id_pos": (0.51, 1.00), "color": (0.0, 1.0, 1.0),
+           "h_lims": (lim_H2, lim_H1), "al_lims": (lim_al_min, lim_al5),
+           "en_id": 'Random Surface'},
+    "Z7": {"id": Z7, "id_pos": (0.95, 86.0), "color": (0.5, 0.5, 0.5),
+           "h_lims": (lim_H1, lim_H_max), "al_lims": (lim_al1, lim_al_max), "en_id": 'Complex Structures'},
+    "Z8": {"id": Z8, "id_pos": (0.95, 41.0), "color": (1.0, 1.0, 0.0),
+           "h_lims": (lim_H1, lim_H_max), "al_lims": (lim_al5, lim_al1),
+           "en_id": 'Random Anisotropic Scatterers'},
+    "Z9": {"id": Z9, "id_pos": (0.95, 1.00), "color": (1.0, 1.0, 0.0),
+           "h_lims": (lim_H1, lim_H_max), "al_lims": (lim_al_min, lim_al5), "en_id": 'Not-Feasible'}
 }
+
 OMITCLASS = "Z9"
 
 import numpy as np

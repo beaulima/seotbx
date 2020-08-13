@@ -128,17 +128,17 @@ def halpha_plot_handle(M_in,
     curve2 = curve2_halpha()
     if bclasscolor:
         M_in0 = M_in.transpose(1, 0)
-        for key in defs.HALPHA_DIV:
+        for key in defs.HALPHA_CLASS_DEF:
             if key == defs.OMITCLASS:
                 continue
-            info = defs.HALPHA_DIV[key]
-            color = info[3]
-            h_lim = info[4]
-            alpha_lim = info[5]
-            idx_min_h = M_in0[:, defs.Entropy] >= h_lim[0]
-            idx_max_h = M_in0[:, defs.Entropy] < h_lim[1]
-            idx_min_alpha = M_in0[:, defs.Alpha] >= alpha_lim[0]
-            idx_max_alpha = M_in0[:, defs.Alpha] < alpha_lim[1]
+            sig_info = defs.HALPHA_CLASS_DEF[key]
+            color = sig_info["color"]
+            h_lims = sig_info["h_lims"]
+            al_lims = sig_info["al_lims"]
+            idx_min_h = M_in0[:, defs.Entropy] >= h_lims[0]
+            idx_max_h = M_in0[:, defs.Entropy] < h_lims[1]
+            idx_min_alpha = M_in0[:, defs.Alpha] >= al_lims[0]
+            idx_max_alpha = M_in0[:, defs.Alpha] < al_lims[1]
             idx = idx_min_h & idx_max_h & idx_min_alpha & idx_max_alpha
             plt.scatter(M_in[defs.Entropy][idx], M_in[defs.Alpha][idx], s=marker_size, alpha=alpha, color=color)
 
@@ -161,11 +161,11 @@ def halpha_plot_handle(M_in,
     plt.plot([defs.lim_H1, defs.lim_H_max], [defs.lim_al1, defs.lim_al1], 'k--')
     plt.plot([defs.lim_H1, defs.lim_H_max], [defs.lim_al5, defs.lim_al5], 'k--')
 
-    for key in defs.HALPHA_DIV:
-        info = defs.HALPHA_DIV[key]
-        xy = info[2]
-        name = info[0]
-        plt.text(xy[0], xy[1], rf"${name}$")
+    for key in defs.HALPHA_CLASS_DEF:
+        sig_info = defs.HALPHA_CLASS_DEF[key]
+        id_pos = sig_info["id_pos"]
+        id = sig_info["id"]
+        plt.text(id_pos[0], id_pos[1], rf"${id}$")
 
     plt.plot(curve1[defs.Entropy], curve1[defs.Alpha], 'r')
     plt.plot(curve2[defs.Entropy], curve2[defs.Alpha], 'g')
@@ -209,17 +209,17 @@ def haalpha_plot(M_in, bshow: bool=True, save_dirpath: str = "", dtobj=None,
     plt.clf()
     if bclasscolor:
         M_in0 = M_in.transpose(1, 0)
-        for key in defs.HALPHA_DIV:
+        for key in defs.HALPHA_CLASS_DEF:
             if key == defs.OMITCLASS:
                 continue
-            info = defs.HALPHA_DIV[key]
-            color = info[3]
-            h_lim = info[4]
-            alpha_lim = info[5]
-            idx_min_h = M_in0[:, defs.Entropy] >= h_lim[0]
-            idx_max_h = M_in0[:, defs.Entropy] < h_lim[1]
-            idx_min_alpha = M_in0[:, defs.Alpha] >= alpha_lim[0]
-            idx_max_alpha = M_in0[:, defs.Alpha] < alpha_lim[1]
+            sig_info = defs.HALPHA_CLASS_DEF[key]
+            color = sig_info["color"]
+            h_lims = sig_info["h_lims"]
+            al_lims = sig_info["al_lims"]
+            idx_min_h = M_in0[:, defs.Entropy] >= h_lims[0]
+            idx_max_h = M_in0[:, defs.Entropy] < h_lims[1]
+            idx_min_alpha = M_in0[:, defs.Alpha] >= al_lims[0]
+            idx_max_alpha = M_in0[:, defs.Alpha] < al_lims[1]
             idx = idx_min_h & idx_max_h & idx_min_alpha & idx_max_alpha
             plt.scatter(M_in[defs.Anisotropy][idx], M_in[defs.Alpha][idx], s=marker_size, alpha=alpha, color=color)
 
@@ -245,29 +245,28 @@ def haalpha_plot(M_in, bshow: bool=True, save_dirpath: str = "", dtobj=None,
     plt.clf()
     if bclasscolor:
         M_in0 = M_in.transpose(1, 0)
-        for key in defs.HALPHA_DIV:
+        for key in defs.HALPHA_CLASS_DEF:
             if key == defs.OMITCLASS:
                 continue
-            info = defs.HALPHA_DIV[key]
-            color = info[3]
-            h_lim = info[4]
-            alpha_lim = info[5]
-            idx_min_h = M_in0[:, defs.Entropy] >= h_lim[0]
-            idx_max_h = M_in0[:, defs.Entropy] < h_lim[1]
-            idx_min_alpha = M_in0[:, defs.Alpha] >= alpha_lim[0]
-            idx_max_alpha = M_in0[:, defs.Alpha] < alpha_lim[1]
+            sig_info = defs.HALPHA_CLASS_DEF[key]
+            color = sig_info["color"]
+            h_lims = sig_info["h_lims"]
+            al_lims = sig_info["al_lims"]
+            idx_min_h = M_in0[:, defs.Entropy] >= h_lims[0]
+            idx_max_h = M_in0[:, defs.Entropy] < h_lims[1]
+            idx_min_alpha = M_in0[:, defs.Alpha] >= al_lims[0]
+            idx_max_alpha = M_in0[:, defs.Alpha] < al_lims[1]
             idx = idx_min_h & idx_max_h & idx_min_alpha & idx_max_alpha
             plt.scatter(M_in[defs.Entropy][idx], M_in[defs.Anisotropy][idx], s=marker_size, alpha=alpha, color=color)
 
     else:
-        plt.scatter(M_in[defs.Entropy], M_in[defs.Anisotropy], s=marker_size)
+        plt.scatter(M_in[defs.Anisotropy], M_in[defs.Alpha], s=marker_size, alpha=alpha)
+
     plt.xlabel(r"Entropy ($H$)")
-    plt.ylabel(r"Anisotropy ($A$)")
+    plt.ylabel(r"$Anisotropy$]")
     plt.title(r"$H/A$ diagram")
     plt.xlim(defs.lim_H_min, defs.lim_H_max)
-    plt.xlim(defs.lim_A_min, defs.lim_A_max)
-    plt.plot(curve1[defs.Entropy], curve1[defs.Anisotropy], 'r')
-    plt.plot(curve2[defs.Entropy], curve2[defs.Anisotropy], 'g')
+    plt.ylim(defs.lim_A_min, defs.lim_A_max)
     if save_dirpath != "":
         basename = "HA"
         if suffix != "":

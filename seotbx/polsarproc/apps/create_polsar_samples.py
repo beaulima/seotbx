@@ -31,14 +31,18 @@ def plot_intensity_histogram(X_out, sig_info, band_id, n_looks, xlim=(0,3.0)):
     plt.ylabel(r"Distribution (%)")
     plt.xlabel(r"Intensity")
     plt.xlim(xlim[0],xlim[1])
-    plt.suptitle(rf"{defs.T3_IDX_NAME[band_id]} - {sig_info[6]} ({sig_info[0]})")
-    basename = f"{sig_info[6]}_{sig_info[0]}_{defs.T3_IDX_NAME[band_id]}_nlooks={n_looks}_histogram".replace(" ", "_")
+    en_id=sig_info["en_id"]
+    id = sig_info["id"]
+    plt.suptitle(rf"{defs.T3_IDX_NAME[band_id]} - {en_id} (id)")
+    basename = f"{en_id}_{id}_{defs.T3_IDX_NAME[band_id]}_nlooks={n_looks}_histogram".replace(" ", "_")
     return {"enl": enl, "alpha": alpha, "loc": loc, "beta": beta, "basename": basename}
 
 
 def plot_halpha_with_centers(M_in_haalpha, sig_info, n_looks, halpha_center):
     seotbx.polsarproc.viz.halpha_plot_handle(M_in=M_in_haalpha, marker_size=0.5)
-    plt.suptitle(rf"{sig_info[6]} ({sig_info[0]}) - {n_looks} look(s)")
+    en_id=sig_info["en_id"]
+    id = sig_info["id"]
+    plt.suptitle(rf"{en_id} ({id}) - {n_looks} look(s)")
     plt.scatter(halpha_center[defs.Entropy], halpha_center[defs.Alpha],
                 s=20, facecolor="None", alpha=1.0, color='k')
     plt.annotate(xycoords='figure fraction', xy=(0.69, 0.3),
@@ -47,14 +51,15 @@ def plot_halpha_with_centers(M_in_haalpha, sig_info, n_looks, halpha_center):
                  text=rf"A = {halpha_center[defs.Anisotropy]:.2f}")
     plt.annotate(xycoords='figure fraction', xy=(0.69, 0.20),
                  text=r"$\bar{\alpha}$" + rf" = {halpha_center[defs.Alpha]:.2f}" + r"$^{\circ}$")
-    basename = f"{sig_info[6]}_{sig_info[0]}_nlooks={n_looks}_halpha_plot"
+    basename = f"{en_id}_{id}_nlooks={n_looks}_halpha_plot"
     basename = basename.replace(" ", "_")
     return {"H": halpha_center[defs.Entropy], "A": halpha_center[defs.Anisotropy], "alpha": halpha_center[defs.Alpha],
             "basename": basename}
 
+
 def produce_signatures_sample_report(sigs_samples_info,save_dir,dtobj,bsave,bshow):
 
-    for key in defs.HALPHA_DIV_IDX:
+    for key in defs.HALPHA_CLASS_DEF:
         # bypass Z9
         if key == defs.OMITCLASS:
             continue
@@ -100,6 +105,38 @@ def save_fig(basename,save_dir,dtobj,ext="png"):
                                                        dtobj=dtobj)
     plt.savefig(filename)
 
+def modify_lims(key,h_lim,alpha_lim):
+    if key == "Z3":
+        h_lim = (0.0, 0.25)
+
+    if key == "Z1" or key == "Z2":
+        h_lim = (0.0, 0.12)
+
+    if key == "Z1" or key == "Z4" or key == "Z7":
+        alpha_lim = (68, 70)
+
+    if key == "Z5":
+        alpha_lim = (43, 47)
+
+    if key == "Z3":
+        alpha_lim = (25, 30)
+
+    if key == "Z6":
+        alpha_lim = (30, 35)
+
+    if key == "Z8":
+        alpha_lim = (47, 51)
+
+    if key == "Z4":
+        h_lim = (0.60, 0.70)
+
+    if key == "Z4" or key == "Z5" or key == "Z6":
+        h_lim = (0.50, 0.60)
+
+    if key == "Z7" or key == "Z8" or key == "Z9":
+        h_lim = (0.90, 0.92)
+    return h_lim,alpha_lim
+
 def polsarsamples_application_func(args):
     """Synthetic polarimetric signatures.
 
@@ -131,7 +168,7 @@ def polsarsamples_application_func(args):
                                        suffix="all")
 
     colors = []
-    for key in defs.HALPHA_DIV:
+    for key in defs.HALPHA_CLASS_DEF:
 
         if key == defs.OMITCLASS:
             continue
@@ -139,46 +176,20 @@ def polsarsamples_application_func(args):
         # if key != "Z1":
         #    continue
 
-        info = defs.HALPHA_DIV[key]
-        color = info[3]
+        sig_info = defs.HALPHA_CLASS_DEF[key]
+        color = sig_info["color"]
 
-        h_lim = info[4]
-        alpha_lim = info[5]
+        h_lims = sig_info["h_lims"]
+        al_lims = sig_info["al_lims"]
 
-        if key == "Z3":
-            h_lim = (0.0, 0.25)
+        # This is to assure that centers computed are in their specific class.
+        # If the full region is used, some average/median signatures are translated in an another class
+        h_lims, al_lims = modify_lims(key, h_lims, al_lims )
 
-        if key == "Z1" or key == "Z2":
-            h_lim = (0.0, 0.12)
-
-        if key == "Z1" or key == "Z4" or key == "Z7":
-            alpha_lim = (68, 70)
-
-        if key == "Z5":
-            alpha_lim = (43, 47)
-
-        if key == "Z3":
-            alpha_lim = (25, 30)
-
-        if key == "Z6":
-            alpha_lim = (30, 35)
-
-        if key == "Z8":
-            alpha_lim = (47, 51)
-
-        if key == "Z4":
-            h_lim = (0.60, 0.70)
-
-        if key == "Z4" or key == "Z5" or key == "Z6":
-            h_lim = (0.50, 0.60)
-
-        if key == "Z7" or key == "Z8" or key == "Z9":
-            h_lim = (0.90, 0.92)
-
-        idx_min_h = M_in0[:, defs.Entropy] >= h_lim[0]
-        idx_max_h = M_in0[:, defs.Entropy] < h_lim[1]
-        idx_min_alpha = M_in0[:, defs.Alpha] >= alpha_lim[0]
-        idx_max_alpha = M_in0[:, defs.Alpha] < alpha_lim[1]
+        idx_min_h = M_in0[:, defs.Entropy] >= h_lims[0]
+        idx_max_h = M_in0[:, defs.Entropy] < h_lims[1]
+        idx_min_alpha = M_in0[:, defs.Alpha] >= al_lims[0]
+        idx_max_alpha = M_in0[:, defs.Alpha] < al_lims[1]
         idx = idx_min_h & idx_max_h & idx_min_alpha & idx_max_alpha
 
         signatures_class = np.expand_dims(np.median(signatures_dataset[idx], axis=(0)), axis=0)
@@ -196,7 +207,7 @@ def polsarsamples_application_func(args):
 
     sigs_info={}
     for k, M_in in enumerate(signatures_class_mean):
-        sig_info = defs.HALPHA_DIV[defs.HALPHA_DIV_IDX[k]]
+        sig_info = defs.HALPHA_CLASS_DEF[defs.HALPHA_DIV_IDX[k]]
         sigs_info[defs.HALPHA_DIV_IDX[k]] = {"info": sig_info, "M": M_in}
 
     if bsave:
@@ -210,12 +221,12 @@ def polsarsamples_application_func(args):
             pickle.dump(sigs_info, f)
 
     sigs_samples_info = sigs_info
-    for key in defs.HALPHA_DIV_IDX:
+    for key in defs.HALPHA_CLASS_DEF:
         # bypass Z9
         if key == defs.OMITCLASS:
             continue
         M_in = sigs_info[key]["M"]
-        M_out = seotbx.polsarproc.tools.polsar_n_looks_simulation(M_in, n_looks, n_samples)
+        M_out = seotbx.polsarproc.tools.polsar_n_looks_simulation(M_in=M_in, n_looks=n_looks, n_samples=n_samples)
         sigs_samples_info[key]["M_samples"] = M_out
         sigs_samples_info[key]["n_looks"] = n_looks
         sigs_samples_info[key]["height"] = height
