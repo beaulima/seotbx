@@ -119,7 +119,6 @@ def polsarsamples_application_func(args):
     width = args.width
     n_samples = height * width
     n_looks = args.n_looks
-    n_looks = 1
     M_in0 = signatures_haalpha.transpose(1, 0)
     signatures_class_mean = []
     save_dir = args.save_dir
@@ -215,6 +214,7 @@ def polsarsamples_application_func(args):
         # bypass Z9
         if key == defs.OMITCLASS:
             continue
+        M_in = sigs_info[key]["M"]
         M_out = seotbx.polsarproc.tools.polsar_n_looks_simulation(M_in, n_looks, n_samples)
         sigs_samples_info[key]["M_samples"] = M_out
         sigs_samples_info[key]["n_looks"] = n_looks
