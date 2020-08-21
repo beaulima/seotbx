@@ -1,12 +1,14 @@
-import logging
-logger = logging.getLogger(__name__)
 import os
 import torch
 from collections import OrderedDict
 from abc import ABC, abstractmethod
+from . import networks
 
 
-class BaseTransform(ABC):
+class BaseModel(ABC):
 
     def __init__(self, config):
+
         self.config = None
+
+

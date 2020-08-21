@@ -70,3 +70,5 @@ def span_normalize_M3(M_in):
     assert M_in.shape[0] == 3 and M_in.shape[1] == 3
     span = M_in[0,0].real + M_in[1,1].real +  + M_in[2,2].real
     return M_in / span
+
+

@@ -1,0 +1,60 @@
+{
+  "model": {
+    "nn": {
+      "type": "seotbx.dl.nn.superresolution.vdsr.VDSR",
+      "params": {
+      }
+    },
+    "loss": {
+      "type": "torch.nn.MSELoss",
+      "params": {
+      }
+    },
+    "optimizer": {
+      "type": "torch.optim.Adam",
+      "params": {
+        "lr": 0.001
+      }
+    },
+    "scheduler": {
+      "type": "torch.optim.lr_scheduler.StepLR",
+      "params": {
+        "step_size": 0.1,
+        "gamma": 0.1
+      }
+    },
+    "datasets": {
+      "datasets_keys": {
+        "train_dataset": "polsar_train",
+        "val_dataset": "polsar_val"
+      },
+      "polsar_train": {
+        "num_workers": 4,
+        "type": "seotbx.polsarproc.data.PolsarHomogeneousPatchDataset",
+        "params": {
+          "signatures_dataset_path": "/misc/voute1_ptl-bema1/visi/beaulima/projects/OGC/eo-tbx/000-LOGS/synthetic_polsar_sigs-10-Aug-2020-(20:11:04.747976).npy",
+          "patch_size": 64,
+          "num_patches": 1024,
+          "num_looks": 4
+        }
+      },
+      "polsar_val": {
+        "num_workers": 4,
+        "type": "seotbx.polsarproc.data.PolsarHomogeneousPatchDataset",
+        "params": {
+          "signatures_dataset_path": "/misc/voute1_ptl-bema1/visi/beaulima/projects/OGC/eo-tbx/000-LOGS/synthetic_polsar_sigs-10-Aug-2020-(20:11:04.747976).npy",
+          "patch_size": 256,
+          "num_patches": 10,
+          "num_looks": 4
+        }
+      }
+    }
+  },
+  "trainer": {
+    "type": "pytorch_lightning.Trainer",
+    "params": {
+      "gpus": 1,
+      "max_epochs": 100
+    }
+  }
+}

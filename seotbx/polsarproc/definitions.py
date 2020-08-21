@@ -1,8 +1,5 @@
 import numpy as np
 
-# list of constants
-SQRT2 = np.sqrt(2.)
-
 # TENSOR_SHAPE
 TS_BCHW = 0
 TS_BHWC = 1

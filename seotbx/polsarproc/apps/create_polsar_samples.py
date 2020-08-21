@@ -5,9 +5,22 @@ import seotbx.polsarproc.definitions as defs
 import seaborn as sns
 from scipy import stats
 import matplotlib.pyplot as plt
-
+import copy
 logger = logging.getLogger("seotbx.polsarproc.apps.create_polsar_samples")
 
+def save2json(filepath, obj):
+
+    import json
+    obj0 = copy.deepcopy(obj)
+    for key in defs.HALPHA_CLASS_DEF:
+        if key is defs.OMITCLASS:
+            continue
+        if "M" in obj0[key]:
+            obj0[key]["M"] = seotbx.polsarproc.convert.MX3_to_X3(obj0[key]["M"]).tolist()
+        if "M_samples" in obj0[key]:
+            obj0[key]["M_samples"] = seotbx.polsarproc.convert.MX3_to_X3(obj0[key]["M_samples"].transpose(1,2,0)).tolist()
+    with open(filepath, "w") as fp:
+        json.dump(obj0, fp,  indent=4)
 
 def polsarsamples_parser_func(subparsers, mode, argparse=None):
     ap = subparsers.add_parser(mode, help="create (HxW) synthetic polarimetric samples from sigs")
@@ -18,7 +31,7 @@ def polsarsamples_parser_func(subparsers, mode, argparse=None):
     ap.add_argument("-N", "--n_looks", default=1, type=int, help="number of looks")
 
 
-def plot_intensity_histogram(X_out, sig_info, band_id, n_looks, xlim=(0,3.0)):
+def plot_intensity_histogram(X_out, sig_info, band_id, n_looks, xlim=(0, 3.0)):
     data = X_out[band_id]
     enl = (np.mean(data) / np.std(data)) ** 2
     sns.distplot(data, kde=False, rug=True, fit=stats.gamma)
@@ -30,8 +43,8 @@ def plot_intensity_histogram(X_out, sig_info, band_id, n_looks, xlim=(0,3.0)):
     plt.title(rf"Homogeneous simulation {n_looks} look(s)")
     plt.ylabel(r"Distribution (%)")
     plt.xlabel(r"Intensity")
-    plt.xlim(xlim[0],xlim[1])
-    en_id=sig_info["en_id"]
+    plt.xlim(xlim[0], xlim[1])
+    en_id = sig_info["en_id"]
     id = sig_info["id"]
     plt.suptitle(rf"{defs.T3_IDX_NAME[band_id]} - {en_id} (id)")
     basename = f"{en_id}_{id}_{defs.T3_IDX_NAME[band_id]}_nlooks={n_looks}_histogram".replace(" ", "_")
@@ -40,7 +53,7 @@ def plot_intensity_histogram(X_out, sig_info, band_id, n_looks, xlim=(0,3.0)):
 
 def plot_halpha_with_centers(M_in_haalpha, sig_info, n_looks, halpha_center):
     seotbx.polsarproc.viz.halpha_plot_handle(M_in=M_in_haalpha, marker_size=0.5)
-    en_id=sig_info["en_id"]
+    en_id = sig_info["en_id"]
     id = sig_info["id"]
     plt.suptitle(rf"{en_id} ({id}) - {n_looks} look(s)")
     plt.scatter(halpha_center[defs.Entropy], halpha_center[defs.Alpha],
@@ -57,8 +70,7 @@ def plot_halpha_with_centers(M_in_haalpha, sig_info, n_looks, halpha_center):
             "basename": basename}
 
 
-def produce_signatures_sample_report(sigs_samples_info,save_dir,dtobj,bsave,bshow):
-
+def produce_signatures_sample_report(sigs_samples_info, save_dir, dtobj, bsave, bshow):
     for key in defs.HALPHA_CLASS_DEF:
         # bypass Z9
         if key == defs.OMITCLASS:
@@ -92,12 +104,13 @@ def produce_signatures_sample_report(sigs_samples_info,save_dir,dtobj,bsave,bsho
         if bsave:
             basename = info["basename"]
             basename = basename.replace(" ", "_")
-            save_fig(basename=basename,save_dir=save_dir,dtobj=dtobj)
+            save_fig(basename=basename, save_dir=save_dir, dtobj=dtobj)
 
         if bshow:
             plt.show()
 
-def save_fig(basename,save_dir,dtobj,ext="png"):
+
+def save_fig(basename, save_dir, dtobj, ext="png"):
     basename = basename.replace(" ", "_")
     filename = seotbx.utils.create_path_with_timestamp(dirpath=save_dir,
                                                        basename=basename,
@@ -105,7 +118,8 @@ def save_fig(basename,save_dir,dtobj,ext="png"):
                                                        dtobj=dtobj)
     plt.savefig(filename)
 
-def modify_lims(key,h_lim,alpha_lim):
+
+def modify_lims(key, h_lim, alpha_lim):
     if key == "Z3":
         h_lim = (0.0, 0.25)
 
@@ -135,7 +149,8 @@ def modify_lims(key,h_lim,alpha_lim):
 
     if key == "Z7" or key == "Z8" or key == "Z9":
         h_lim = (0.90, 0.92)
-    return h_lim,alpha_lim
+    return h_lim, alpha_lim
+
 
 def polsarsamples_application_func(args):
     """Synthetic polarimetric signatures.
@@ -184,7 +199,7 @@ def polsarsamples_application_func(args):
 
         # This is to assure that centers computed are in their specific class.
         # If the full region is used, some average/median signatures are translated in an another class
-        h_lims, al_lims = modify_lims(key, h_lims, al_lims )
+        h_lims, al_lims = modify_lims(key, h_lims, al_lims)
 
         idx_min_h = M_in0[:, defs.Entropy] >= h_lims[0]
         idx_max_h = M_in0[:, defs.Entropy] < h_lims[1]
@@ -205,7 +220,7 @@ def polsarsamples_application_func(args):
     seotbx.polsarproc.viz.haalpha_plot(M_in=signatures_haalpha_class_mean, bshow=False, marker_size=10,
                                        save_dirpath=save_dir, dtobj=dtobj, suffix="centers")
 
-    sigs_info={}
+    sigs_info = {}
     for k, M_in in enumerate(signatures_class_mean):
         sig_info = defs.HALPHA_CLASS_DEF[defs.HALPHA_DIV_IDX[k]]
         sigs_info[defs.HALPHA_DIV_IDX[k]] = {"info": sig_info, "M": M_in}
@@ -219,6 +234,13 @@ def polsarsamples_application_func(args):
         import pickle
         with open(file_path, 'wb') as f:
             pickle.dump(sigs_info, f)
+
+        file_path = seotbx.utils.create_path_with_timestamp(dirpath=save_dir,
+                                                            basename=basename,
+                                                            ext='json',
+                                                            dtobj=dtobj)
+
+        save2json(file_path,sigs_info)
 
     sigs_samples_info = sigs_info
     for key in defs.HALPHA_CLASS_DEF:
@@ -237,12 +259,17 @@ def polsarsamples_application_func(args):
         file_path = seotbx.utils.create_path_with_timestamp(dirpath=save_dir,
                                                             basename=basename,
                                                             ext='pkl',
-                                                           dtobj=dtobj)
+                                                            dtobj=dtobj)
         import pickle
         with open(file_path, 'wb') as f:
             pickle.dump(sigs_samples_info, f)
 
+        file_path = seotbx.utils.create_path_with_timestamp(dirpath=save_dir,
+                                                            basename=basename,
+                                                            ext='json',
+                                                            dtobj=dtobj)
+
+        save2json(file_path, sigs_samples_info)
+
     if bsave:
         produce_signatures_sample_report(sigs_samples_info, save_dir, dtobj, bsave, bshow)
-
-

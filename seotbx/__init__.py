@@ -16,6 +16,7 @@ import seotbx.slurm
 
 #applications
 seotbx.polsarproc.apps.registering_application()
+seotbx.dl.apps.registering_application()
 seotbx.sentinelsat_api.apps.registering_application()
 #seotbx.snappy_api.apps.registering_application()
 logger = logging.getLogger("seotbx")

@@ -7,6 +7,11 @@ dependencies:
   - pip
   - numpy
   - scipy
+  - gitdb
+  - gitpython
+  - h5py
+  - hdf5plugin
+  - opencv
   - gdal
   - seaborn
   - matplotlib
@@ -14,5 +19,10 @@ dependencies:
   - geoplot
   - owslib
   - umap-learn
+  - pytorch
+  - torchvision
+  - cudatoolkit=10.2
+  - boost
   - pip:
     - -r requirements.txt
+    - git+https://github.com/PyTorchLightning/pytorch-lightning

@@ -6,7 +6,7 @@ from collections import OrderedDict
 from abc import ABC, abstractmethod
 
 
-class BaseTransform(ABC):
+class BaseOptimiser(ABC):
 
     def __init__(self, config):
-        self.config = None
+        self.optimiser = None
